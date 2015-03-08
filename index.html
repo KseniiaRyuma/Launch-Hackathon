@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Squadfree - Free bootstrap 3 one page template</title>
+
+    <script src="https://cdn.traitify.com/lib/v1.js"></script>
+    <!-- <script src="js/_jquery-2.1.3.min.js"></script> -->
+    <script src="js/jquery-1.10.2.js"></script>	
+
+    <!-- Calendar -->
+	<script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
+
+	<script type="text/javascript" src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+
+	<link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="css/animate.css" rel="stylesheet" />
+    <!-- Squad theme CSS -->
+    <link href="css/style.css" rel="stylesheet">
+	<link href="color/default.css" rel="stylesheet">
+	<link href="css/preloader.css" rel="stylesheet">
+
+	<script type="text/javascript">
+
+		var id;
+		var created_at;
+		var timer;
+
+		var departure = "SFO";
+		var destination = "";
+		var dateDeparture = "";
+		var dateReturn = "";
+		var nameOfAirport = "";
+
+		var key = "94uVzJjmUntv6dXFJ2B6fvufGXhuP6WR";
+
+		var base = {
+			"Charismatic" : {
+				"Paris" : { "airport" : "CDG", "img" : "Paris.jpg" },
+				"Venice" : { "airport" : "VCE", "img" : "Venice.jpg" },
+				"Carmel CA" : { "airport" : "MRY", "img" : "Carmel.jpg" },
+				"Honolulu" : { "airport" : "MHL", "img" : "Honolulu.jpg" },
+				"Quebec City, Canada" : { "airport" : "YQB", "img" : "Quebec.jpg" },
+			},
+			"Unconventional" : {
+				"Phnom Penh" : { "airport" : "PNH", "img" : "Phnom-penh.jpg" },
+				"Singapore" : { "airport" : "SIN", "img" : "Singapore.jpg" },
+				"Bali" : { "airport" : "DPS", "img" : "Bali.jpg" },
+				"Phuket" : { "airport" : "HKT", "img" : "Phuket.jpg" },
+				"Avila" : { "airport" : "AVJ", "img" : "Avila.jpg" },
+			},
+			"Thoughtful" : {
+				"Lhasa" : { "airport" : "LXA", "img" : "Lhassa.jpg" },
+				"Mumbai" : { "airport" : "BOM", "img" : "Mumbai.jpg" },
+				"Agra" : { "airport" : "DEL", "img" : "Agra.jpg" },
+				"Chania" : { "airport" : "CHQ", "img" : "Chania.jpg" },
+				"Daytona Beach" : { "airport" : "DAB", "img" : "DaytonaBeach.jpg" },
+			},
+			"Adventurous" : {
+				"Tel Aviv" : { "airport" : "TLV", "img" : "Telaviv.jpg" },
+				"Kuala Lumpur" : { "airport" : "KUL", "img" : "Kuala-Lumpur.jpg" },
+				"Las Vegas" : { "airport" : "LAS", "img" : "Las-Vegas.jpg" },
+				"San Francisco" : { "airport" : "SFO", "img" : "San-Francisco.jpg" },
+				"Washington, D.C." : { "airport" : "DCA", "img" : "WashingtonDC.jpg" },
+			},
+			"Rational" : {
+				"Los Angeles" : { "airport" : "LAX", "img" : "Losangeles.jpg" }, 
+				"London" : { "airport" : "LON", "img" : "London.jpg" },
+				"Bangkok" : { "airport" : "BKK", "img" : "Bangkok.jpg" },
+				"Istanbul" : { "airport" : "IST", "img" : "Istanbul.jpg" },
+				"Barcelona" : { "airport" : "BCN", "img" : "Barcelona.jpg" },
+			},
+			"Social" : {
+				"Madrid" : { "airport" : "MAD", "img" : "Madrid.jpg" },
+				"Chengdu" : { "airport" : "CTU", "img" : "Chengdu.jpg" },
+				"Hamburg" : { "airport" : "HAM", "img" : "Hamburg.jpg" },
+				"Helsinki" : { "airport" : "HEL", "img" : "Helsinki.jpg" },
+				"Amsterdam" : { "airport" : "AMS", "img" : "Amsterdam.jpg" },
+			},
+			"Reliable" : { 
+				"Hartford" : { "airport" : "HFD", "img" : "Hartford.jpg" },
+				"Atlanta" : { "airport" : "ATL", "img" : "Atlanta.jpg" },
+				"New York" : { "airport" : "JFK", "img" : "NewYork.jpg" },
+				"Dubai" : { "airport" : "DXB", "img" : "Dubai.jpg" },
+				"Hong Kong" : { "airport" : "HKG", "img" : "HongKong.jpg" },
+			}
+		}
+
+		$(document).ready(function() {
+			start();
+			$('#dateDeparture').datetimepicker({
+				format: 'YYYY-MM-DD',
+    			extraFormats: [ 'YYYY-MM-DD' ]
+			});			
+			$('#dateReturn').datetimepicker({
+				format: 'YYYY-MM-DD',
+    			extraFormats: [ 'YYYY-MM-DD' ]
+			});
+			$(".apply-setup").click(function(){
+				getAirport();
+			});
+			$("#service").css("display","block");
+			$(".pt-test").css("display","none");
+		})
+
+		function start() {
+			$.get( "key.php", function( data ) {
+			  data = data.substring(0, data.length - 1);
+			  var obj = jQuery.parseJSON( data );
+				id = obj.id;
+				created_at = obj.created_at;
+				initInterview(id); // "48c3251f-c0c0-492f-9341-9a4b2d58b476");//
+			});
+		}
+
+		function initInterview(id) {
+			Traitify.setPublicKey("a9tub40p04d1bjg3mi0kq7qamp");
+			Traitify.setHost("https://api-sandbox.traitify.com");
+			Traitify.setVersion("v1");
+			var assessmentId = id;
+			Traitify.ui.load(assessmentId, ".assessment");
+			timer = setInterval(detectEnd, 1000);
+		}
+
+		function detectEnd() {
+			if($(".personality-type").length >= 1) {
+				clearInterval(timer);
+				var counter = 0;
+				$.each( $(".personality-type"), function( key, value ) {
+					if (counter <= 1) {  
+					  //console.log( $(value).find(".name").text() + " "+ $(value).find(".score").text());
+					  showDirections(base[ $(value).find(".name").text() ]);
+						counter += 1;
+					};
+				});
+				$("#service").css("display","block");
+				$(".pt-test").css("display","block");
+			}
+		}
+
+		function showDirections(obj, city) {
+			$.each( obj, function( key, value ) {
+				var img = value.img;
+				var airport = value.airport;
+
+				var res = jQuery('<div/>', {
+				    id: 'foo',
+				}).appendTo('.cities');
+				res.addClass("direction");
+				res.attr("airport", airport);				
+
+				var img = jQuery('<img/>', {
+				    src: "img-cities/"+img
+				}).appendTo(res);
+
+				res.click(function(){
+					setupFlight(airport, key);
+				});
+
+				var desc = jQuery('<div/>', { 
+			    "class": 'desc',
+			    text: key,
+				}).appendTo(res);
+
+			});
+		}
+
+		function setupFlight(airport, airportName) {
+			$(".advtitle").html(" Get adventure to "+airportName+"!");			
+			$('#myModal').modal('show');
+			destination = airport;
+			nameOfAirport = airportName;
+		}
+
+		function getAirport() {
+			//console.log("ar "+$("#recipientDeparture").val());
+			if ( $("#recipientDeparture").val() !== "" ) {
+				getDepartureAirport();
+			} else {
+				alert("Please fill out departure city!");
+			}
+		}
+
+		function getDepartureAirport() {
+			var url = "http://terminal2.expedia.com/suggestions/flights?query="+$("#recipientDeparture").val()+"&maxresults=10&apikey="+key;
+			$.getJSON(url, function( data ) {
+				departure = data.sr[0].a;
+				//console.log(departure);
+				dateDeparture = $("#dateDeparture").val();
+				dateReturn = $("#dateReturn").val();
+				getFlights(departure, destination, dateDeparture, dateReturn);
+			});
+		}
+
+		function getFlights(departure, destination, dateDeparture, dateReturn) {
+
+			var url = "http://terminal2.expedia.com/packages?departureDate="+dateDeparture+"&originAirport="+departure+"&destinationAirport="+destination+"&returnDate="+dateReturn+"&regionid=6000479&apikey="+key;
+			//console.log(url);
+
+			createLoading();
+			$('#myModal').modal('hide');
+			$("html, body").animate({ scrollTop: $('#result').offset().top }, 1000);
+
+			$.getJSON(url, function( data ) {
+				//console.log(data);
+				$(".flights").empty();
+
+				var sp = jQuery('<h2/>', { 
+		    		text: "Check out our hot deals!",
+		    		"class": "check-out-h"
+				}).appendTo($(".flights"));
+
+				var counter = 0;
+				$.each( data.HotelList.Hotel, function( keyH, valueH ) { 
+					counter += 1;
+
+					if(counter <10) {
+
+						var sp = jQuery('<div/>', { 
+		    				"class": 'hotel',
+						}).appendTo($(".flights"));
+
+
+						jQuery('<img/>', {
+							"class": "hotel-img",
+						    src: valueH.OverviewThumbnail
+						}).appendTo($(sp));
+
+						jQuery('<h3/>', { text: "Flight plus hotel deal" }).appendTo( $(sp) );
+						jQuery('<div/>', { text: valueH.Description }).appendTo( $(sp) );
+						jQuery('<div/>', { text: valueH.Location.City+" "+valueH.Location.StreetAddress }).appendTo( $(sp) );
+						jQuery('<div/>', { text: valueH.Name }).appendTo( $(sp) );
+
+						jQuery('<div/>', { text: valueH.RoomRatePlanDescription }).appendTo( $(sp) );
+						jQuery('<div/>', { text: valueH.RoomsRemaining }).appendTo( $(sp) );
+						jQuery('<div/>', { text: valueH.StarRating }).appendTo( $(sp) );
+						jQuery('<div/>', { text: valueH.TravelerReviewCount+"/"+valueH.TravelerReviewRating }).appendTo( $(sp) );
+						
+						var ti = jQuery('<div/>', { 
+		    				"class": 'ticket',
+						}).appendTo($(sp));
+
+						var valueH = data.PackageSearchResultList.PackageSearchResult[keyH];
+				
+						var resBtn = jQuery('<button/>', { 
+							type: "button",  
+							"class": "btn btn-primary btn-lg get-hotel",
+							text: "Get "+"$"+valueH.PackagePrice.TotalPrice.Value
+						}).appendTo( $(ti) );
+
+						if (valueH.BrandedDealsMarker) {
+							if(valueH.BrandedDealsMarker.BrandedDealsType) {
+								for (variable in valueH.BrandedDealsMarker.BrandedDealsType) {
+									jQuery('<div/>', { text: valueH.BrandedDealsMarker.BrandedDealsType[variable] }).appendTo( $(ti) );
+								}
+							}
+						}
+						if (valueH.PackagePrice.TotalSavings.Value > 0) {
+							jQuery('<div/>', { text: "Total savings: "+ valueH.PackagePrice.TotalSavings.Value }).appendTo( $(ti) );
+						}
+						$(resBtn).click(function(){
+							window.open(valueH.DetailsUrl, '_blank');
+						});
+					}
+				});
+
+				$("html, body").animate({ scrollTop: $('#result').offset().top }, 1000);
+
+			});
+		}
+
+		function drawFligth(obj) {
+			//console.log(obj);
+			var sp = jQuery('<div/>', { 
+    				"class": 'ticket',
+			}).appendTo($(".flights"));
+
+			$.each(obj , function( key2, value2 ) { 
+				jQuery('<div/>', { text: value2 }).appendTo( $(sp) );
+			});
+		}
+
+		function createLoading() {
+			$(".flights").empty();
+			var sp = jQuery('<div/>', { 
+		    "class": 'pre-loader',
+		    "align": "center"
+			}).appendTo($(".flights"));
+
+			var divP = jQuery('<div/>', {
+			    id: "loader-wrapper"
+			}).appendTo(sp);
+
+			var divL = jQuery('<div/>', {
+			    id: "loader"
+			}).appendTo(divP);
+
+			var text = jQuery('<div/>', {
+			    text: "Search for flights to "+nameOfAirport+"...",
+			    "class": "flto"
+			}).appendTo($(".flights"));
+		}
+
+	</script>
+	<style type="text/css">
+		.hotel-img {
+			float: right;
+		}
+		.get-hotel {
+			float: right;
+		}
+		.direction {
+			width: 400px;
+			height: 200px;
+			display: inline-block;
+			margin: 20px;
+			background-size: cover;
+			cursor: pointer;
+			overflow: hidden;
+			position: relative;
+		}
+		.check-out-h {
+			padding-top: 50px;
+		}
+		.ticket {
+			width: 100%;
+			text-align: left;
+			background: #d1ffe8;
+			padding: 15px;
+			margin-top: 20px;
+			-webkit-border-radius: 15px;
+			-moz-border-radius: 15px;
+			border-radius: 15px;
+			min-height: 75px;
+		}		
+		.hotel {
+			width: 500px;
+			float: left;
+			text-align: left;
+			background: #d1ecff;
+			padding: 15px;
+			margin: 20px;
+			-webkit-border-radius: 15px;
+			-moz-border-radius: 15px;
+			border-radius: 15px;'
+			-webkit-box-shadow: 0px 3px 5px 0px rgba(50, 50, 50, 0.75);
+			-moz-box-shadow:    0px 3px 5px 0px rgba(50, 50, 50, 0.75);
+			box-shadow:         0px 3px 5px 0px rgba(50, 50, 50, 0.75);
+		}
+		.pre-loader {
+			margin-top: 100px;
+		}
+		.flto {
+			font-size: 20px;
+			padding: 15px;
+		}
+		.desc {
+			padding: 15px;
+			color: #FFF;
+			background-image: url("img/70.png");
+			position: absolute;
+			top: 0px;
+			-webkit-border-bottom-right-radius: 12px;
+			-moz-border-radius-bottomright: 12px;
+			border-bottom-right-radius: 12px;
+		}
+		.badge:empty {
+			display: block;
+			background: none;
+			margin: 0px auto;
+		}
+
+		.tf-personality-types .personality-types-container .personality-types .personality-type .badge {
+			width: initial !important;
+		}
+
+		.direction img {
+		    -moz-transition: all .5s;
+		    -webkit-transition: all .5s;
+		    transition: all .5s;
+		    -moz-transform: scale(1,1);
+		    -webkit-transform: scale(1,1);
+		    transform: scale(1,1);
+		    width: 100%;
+		    height: 100%;
+		}
+
+		.direction:hover img {
+		    -moz-transform: scale(1.3,1.3);
+		    -webkit-transform: scale(1.3,1.3);
+		    transform: scale(1.3,1.3);
+		}
+		.intro {
+			background-size: cover;
+		}
+		.pt-test {
+			display: none;
+		}
+	</style>
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
+	<!-- Preloader -->
+	<div id="preloader">
+	  <div id="load"></div>
+	</div>
+
+    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="index.html">
+                    <!-- <h1>SQUAD FREE</h1> -->
+                </a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#intro">Home</a></li>
+        <li><a href="#about">Start</a></li>
+
+      </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+	<!-- Section: intro -->
+    <section id="intro" class="intro">
+		<!--
+		<div class="slogan">
+			<h2>WELCOME TO <span class="text_color">SQUAD</span> </h2>
+			<h4>WE ARE GROUP OF GENTLEMEN MAKING AWESOME WEB WITH BOOTSTRAP</h4>
+		</div>
+		<div class="page-scroll">
+			<a href="#about" class="btn btn-circle">
+				<i class="fa fa-angle-double-down animated"></i>
+			</a>
+		</div>
+		-->
+    </section>
+	<!-- /Section: intro -->
+
+	<!-- Section: about -->
+    <section id="about" class="home-section text-center">
+		<div class="heading-about">
+			<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+					<div class="wow bounceInDown" data-wow-delay="0.4s">
+					<div class="section-heading">
+					<h2>Start Your Personality Test</h2>
+					<i class="fa fa-2x fa-angle-down"></i>
+
+					</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		<div class=""><!-- container -->
+
+		<div class="row">
+			<div class="col-lg-2 col-lg-offset-5">
+				<hr class="marginbot-50">
+			</div>
+		</div>
+        <div class="row">
+        	<div class="col-lg-12 assessment"></div>
+        </div>
+	    <!--</div>-->		
+		</div>
+	</section>
+	<!-- /Section: about -->
+
+	<!-- Section: services -->
+    <section id="service" class="home-section text-center bg-gray">
+		
+		<div class="heading-about">
+			<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2 pt-test">
+					<div class="wow bounceInDown" data-wow-delay="0.4s">
+					<div class="section-heading">
+					<h2 class="pt-test">Cities that best match your personality type</h2>
+					<i class="fa fa-2x fa-angle-down"></i>
+
+					</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+		<div class="container">
+		<div class="row">
+			<div class="col-lg-2 col-lg-offset-5">
+				<hr class="marginbot-50">
+			</div>
+		</div>
+        <div class="row">
+            <div class="col-lg-12 cities"></div>
+            
+            <br>
+
+            <div id="result" class="col-lg-12 flights"></div>
+           
+
+        </div>		
+		</div>
+	</section>
+
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12 col-lg-12">
+					<div class="wow shake" data-wow-delay="0.4s">
+					<div class="page-scroll marginbot-30">
+						<a href="#intro" id="totop" class="btn btn-circle">
+							<i class="fa fa-angle-double-up animated"></i>
+						</a>
+					</div>
+					</div>
+					<p>&copy;Copyright 2015 - Travel Match.</p>
+				</div>
+			</div>	
+		</div>
+	</footer>
+
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title advtitle" id="myModalLabel">Get adventure!</h4>
+	      </div>
+	      <div class="modal-body">
+	        <div class="form-group">
+            	<label for="recipientDeparture" class="control-label">City of departure:</label>
+            	<input type="text" class="form-control" id="recipientDeparture">
+            	<br>
+            	<label for="recipient-departure" class="control-label">Date of departure:</label>
+            	<input type='text' class="form-control" id='dateDeparture' value="2015-03-02" />            	
+            	<br>
+            	<label for="recipient-departure" class="control-label">Date of return:</label>
+            	<input type='text' class="form-control" id='dateReturn' value="2015-03-10" />
+          	</div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+	        <button type="button" class="btn btn-primary apply-setup">Yes!</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+    <!-- Core JavaScript Files -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.min.js"></script>	
+	<script src="js/jquery.scrollTo.js"></script>
+	<script src="js/wow.min.js"></script>
+    <!-- Custom Theme JavaScript -->
+    <script src="js/custom.js"></script>
+
+</body>
+
+</html>
